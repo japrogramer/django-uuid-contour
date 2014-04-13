@@ -7,8 +7,8 @@ import re
 class UUIDContour(models.Field, metaclass=models.SubfieldBase):
     description = _('uuid(%(standard)s) max_length is %(max_length)s')
 
-    def __init__(self, standard, *args, **kwargs):
-        kwargs['max_length'] = 36
+    def __init__(self, standard, immutable=False, *args, **kwargs):
+        kwargs['max_length'] = 32
         super(UUIDContour, self).__init__(*args, **kwargs)
 
     def db_type(self, connection):
@@ -17,23 +17,50 @@ class UUIDContour(models.Field, metaclass=models.SubfieldBase):
             return 'uuid'
         return 'char(%s)' % self.max_length
 
+    def get_db_prep_value(self, value, connection, prepared=False):
+        # If the value has been prepared than it is suitable to be used with
+        # the db
+        if prepared:
+            return value
+        else:
+            value = super(UUIDContour, self).get_db_prep_value(
+                    value, connection)
+            return value
+
+    def get_prep_value(self, value):
+        # prepare for use in a query
+        if isinstance(value, uuid.UUID):
+            return value.hex
+        if isinstance(value, str):
+            if '-' in value:
+                return value.replace('-', '')
+        return value
+
     def to_python(self, value):
         if not value:
             return None
-        if isinstance(value, ):
+        if isinstance(value, uuid.UUID):
             return value
         # uuids, xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx where M is the
         # version and N is the variant
-        pu = re.compile('[a-f0-9]{8}-[a-f0-9]{4}-(?P<version>[1-5])[a-f0-9]{3}'
+        ph = re.compile('[a-f0-9]{8}-[a-f0-9]{4}-(?P<version>[1-5])[a-f0-9]{3}'
                 '-(?P<variant>[89ab])[a-f0-9]{3}-[a-f0-9]{12}')
-        return super
+        pu = re.compile('[a-f0-9]{8}[a-f0-9]{4}(?P<version>[1-5])[a-f0-9]{3}'
+                '(?P<variant>[89ab])[a-f0-9]{3}[a-f0-9]{12}')
+        # if the value returned by the database or serializer matches one of
+        # the regex than return a uuid.UUID
+        try:
+            uuid_topical = uuid.UUID(value)
+        except ValueError:
+            raise ValidationError(_(''), code='failed uuid')
+        return uui
 
     def formfield(self):
         canonical = {
             'form_class': forms.CharField,
             'max_length': self.max_length,
         }
-        defaults.update(kwargs)
+        canonical.update(kwargs)
         return super(UUIDContour, self).formfield(**canonical)
 
     def deconstruct(self):
