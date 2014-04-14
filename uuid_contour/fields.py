@@ -16,7 +16,7 @@ class UUIDContour(models.Field, metaclass=models.SubfieldBase):
     description = _('uuid(%(standard)s) max_length is %(max_length)s')
 
     def __init__(self, standard=4, immutable=False, name=None,
-            namespace=None, node=Node, clock_seq=None, *args, **kwargs):
+            namespace=None, node=None, clock_seq=None, *args, **kwargs):
         self.standard = standard
         if immutable:
             kwargs['unique'] = True

@@ -1,2 +1,1 @@
-django-uuid-contour
-===================
+Django UUID Contour Field by japrogramer
