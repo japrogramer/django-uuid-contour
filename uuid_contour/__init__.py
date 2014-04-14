@@ -1,2 +1,2 @@
-__version__ = '.1'
+__version__ = '0.1'
 default_app_config = 'uuid_contour.apps.DefaultConfig'

@@ -1,10 +1,9 @@
-import codecs
 import os
 from setuptools import setup, find_packages
 
 CURRENT_DIR = os.path.dirname(__file__)
 def read(fname):
-    return codecs.open(os.path.join(CURRENT_DIR, fname)).read()
+    return open(os.path.join(CURRENT_DIR, fname)).read()
 
 # Info for setup
 PACKAGE = 'uuid_contour'
