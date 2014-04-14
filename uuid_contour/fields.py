@@ -18,13 +18,14 @@ class UUIDContour(models.Field, metaclass=models.SubfieldBase):
     def __init__(self, standard=4, immutable=False, name=None,
             namespace=None, node=None, clock_seq=None, *args, **kwargs):
         self.standard = standard
+        self.immutable = immutable
         if immutable:
             kwargs['unique'] = True
             kwargs['blank'] = True
             kwargs['editable'] = False
-        if version == 1:
+        if standard == 1:
             self.node, self.clock_seq = node, clock_seq
-        elif version in (3, 5):
+        elif standard in (3, 5):
             self.namespace, self.name = namespace, name
         kwargs['max_length'] = 32
         super(UUIDContour, self).__init__(*args, **kwargs)
@@ -121,5 +122,9 @@ class UUIDContour(models.Field, metaclass=models.SubfieldBase):
 
     def deconstruct(self):
         name, path, args, kwargs = super(UUIDContour, self).deconstruct()
+        if self.immutable:
+            kwargs['unique'] = True
+            kwargs['blank'] = True
+            kwargs['editable'] = False
         del kwargs['max_length']
         return name, path, args, kwargs
