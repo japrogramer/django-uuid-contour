@@ -1,15 +1,57 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext as _
 
 import uuid
 import re
 
+# uuids, xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx where M is the
+# version and N is the variant
+ph = re.compile('[a-f0-9]{8}-[a-f0-9]{4}-(?P<version>[1-5])[a-f0-9]{3}'
+        '-(?P<variant>[89ab])[a-f0-9]{3}-[a-f0-9]{12}')
+pu = re.compile('[a-f0-9]{8}[a-f0-9]{4}(?P<version>[1-5])[a-f0-9]{3}'
+        '(?P<variant>[89ab])[a-f0-9]{3}[a-f0-9]{12}')
+
 class UUIDContour(models.Field, metaclass=models.SubfieldBase):
     description = _('uuid(%(standard)s) max_length is %(max_length)s')
 
-    def __init__(self, standard, immutable=False, *args, **kwargs):
+    def __init__(self, standard=4, immutable=False, name=None,
+            namespace=None, node=Node, clock_seq=None, *args, **kwargs):
+        self.standard = standard
+        if immutable:
+            kwargs['unique'] = True
+            kwargs['blank'] = True
+            kwargs['editable'] = False
+        if version == 1:
+            self.node, self.clock_seq = node, clock_seq
+        elif version in (3, 5):
+            self.namespace, self.name = namespace, name
         kwargs['max_length'] = 32
         super(UUIDContour, self).__init__(*args, **kwargs)
+
+    def _generate_uuid(self):
+        if self.standard is 1:
+            uuid_kwargs = {'node': self.node, 'cloq_seq': self.clock_seq,}
+        if self.standard in (3, 5):
+            errors = {
+                    'error': False,
+                    'namespace': '',
+                    'name': '',
+                    }
+            if self.namespace is None:
+                errors['error'] = True
+                errors['namespace'] =  ' namespace'
+            if self.name is None:
+                errors['error'] = True
+                errors['name'] =  ' name'
+            if errors['error']:
+                raise ValidationError(_('missing:%(namespace)s%(name)s'),
+                        code='missing params',
+                        params=errors)
+            uuid_kwargs = {'name': self.name, 'namespace': self.namespace,}
+        else:
+            uuid_kwargs = {}
+        return getattr(uuid, 'uuid%s' % self.standard)(*uuid_kwargs)
 
     def db_type(self, connection):
         if connection.settings_dict['ENGINE'] ==
@@ -25,7 +67,7 @@ class UUIDContour(models.Field, metaclass=models.SubfieldBase):
         else:
             value = super(UUIDContour, self).get_db_prep_value(
                     value, connection)
-            return value
+        return value
 
     def get_prep_value(self, value):
         # prepare for use in a query
@@ -36,24 +78,38 @@ class UUIDContour(models.Field, metaclass=models.SubfieldBase):
                 return value.replace('-', '')
         return value
 
+    def pre_save(self, model_instance, add):
+        value = getattr(model_instance, self.attname, None)
+        if not value and self.immutable and add:
+            value = self._generate_uuid()
+            setattr(model_instance, self.attname, value)
+            return value.hex
+        elif self.immutable and not value:
+            value = self._generate_uuid()
+            setattr(model_instance, self.attname, value)
+            return value.hex
+        return value
+
     def to_python(self, value):
+        # value returned by the database or serializer, return a uuid.UUID
         if not value:
             return None
         if isinstance(value, uuid.UUID):
             return value
-        # uuids, xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx where M is the
-        # version and N is the variant
-        ph = re.compile('[a-f0-9]{8}-[a-f0-9]{4}-(?P<version>[1-5])[a-f0-9]{3}'
-                '-(?P<variant>[89ab])[a-f0-9]{3}-[a-f0-9]{12}')
-        pu = re.compile('[a-f0-9]{8}[a-f0-9]{4}(?P<version>[1-5])[a-f0-9]{3}'
-                '(?P<variant>[89ab])[a-f0-9]{3}[a-f0-9]{12}')
-        # if the value returned by the database or serializer matches one of
-        # the regex than return a uuid.UUID
         try:
-            uuid_topical = uuid.UUID(value)
-        except ValueError:
-            raise ValidationError(_(''), code='failed uuid')
-        return uui
+            value = uuid.UUID(value)
+        except ValueError as e:
+            raise ValidationError(_('Invalid Value: %(value)s: %(msg)s'),
+                    code='failed uuid',
+                    params={
+                        'value': value,
+                        'msg': str(e),
+                        })
+        return value
+
+    def value_to_string(self, obj):
+         value = self._get_val_from_obj(obj)
+         return self.get_prep_value(value)
 
     def formfield(self):
         canonical = {
