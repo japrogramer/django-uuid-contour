@@ -7,10 +7,10 @@ import re
 
 # uuids, xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx where M is the
 # version and N is the variant
-ph = re.compile('[a-f0-9]{8}-[a-f0-9]{4}-(?P<version>[1-5])[a-f0-9]{3}'
-        '-(?P<variant>[89ab])[a-f0-9]{3}-[a-f0-9]{12}')
-pu = re.compile('[a-f0-9]{8}[a-f0-9]{4}(?P<version>[1-5])[a-f0-9]{3}'
-        '(?P<variant>[89ab])[a-f0-9]{3}[a-f0-9]{12}')
+ph = re.compile(r'[a-f0-9]{8}-[a-f0-9]{4}-(?P<version>[1-5])[a-f0-9]{3}'
+        r'-(?P<variant>[89ab])[a-f0-9]{3}-[a-f0-9]{12}')
+pu = re.compile(r'[a-f0-9]{8}[a-f0-9]{4}(?P<version>[1-5])[a-f0-9]{3}'
+        r'(?P<variant>[89ab])[a-f0-9]{3}[a-f0-9]{12}')
 
 class UUIDContour(models.Field, metaclass=models.SubfieldBase):
     description = _('uuid(%(standard)s) max_length is %(max_length)s')
@@ -122,9 +122,15 @@ class UUIDContour(models.Field, metaclass=models.SubfieldBase):
 
     def deconstruct(self):
         name, path, args, kwargs = super(UUIDContour, self).deconstruct()
+        del kwargs['max_length']
         if self.immutable:
             kwargs['unique'] = True
             kwargs['blank'] = True
             kwargs['editable'] = False
-        del kwargs['max_length']
+        if self.node is not None and self.clock_seq is not None:
+            kwargs['node'] = self.node
+            kwargs['clock_seq'] = self.clock_seq
+        if self.name is not None and self.namespace is not None:
+            kwargs['name'] = self.name
+            kwargs['namespace'] = self.namespace
         return name, path, args, kwargs
