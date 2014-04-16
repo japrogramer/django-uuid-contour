@@ -14,7 +14,7 @@ class UUID3Contour(UUIDContour):
     username = models.CharField(max_length=40)
     uu3 = UUIDContour(standard=3,
             namespace=uuid.NAMESPACE_DNS,
-            name=self.username)
+            name='something')
 
     def __str__(self):
         return self.uu3.hex
@@ -30,7 +30,7 @@ class UUID5Contour(UUIDContour):
     username = models.CharField(max_length=40)
     uu5 = UUIDContour(standard=5,
             namespace=uuid.NAMESPACE_DNS,
-            name=self.username)
+            name='something')
 
     def __str__(self):
         return self.uu5.hex
