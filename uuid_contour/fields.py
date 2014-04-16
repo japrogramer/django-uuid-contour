@@ -112,7 +112,7 @@ class UUIDContour(models.Field, metaclass=models.SubfieldBase):
          value = self._get_val_from_obj(obj)
          return self.get_prep_value(value)
 
-    def formfield(self):
+    def formfield(self, **kwargs):
         canonical = {
             'form_class': forms.CharField,
             'max_length': self.max_length,
