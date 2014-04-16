@@ -28,7 +28,7 @@ if not settings.configured:
 
 
 def runtests(verbosity, interactive, failfast, test_labels):
-    test_runner = TestRunner( verbosity=verbosity,
+    test_runner = DiscoverRunner( verbosity=verbosity,
             interactive=interactive,
             failfast=failfast,
             )
