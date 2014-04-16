@@ -51,7 +51,7 @@ if __name__ == '__main__':
     options, args = parser.parse_args()
 
     failures = runtests(int(options.verbosity), options.interactive,
-            options.failfast, 'uuid_contour')
+            options.failfast, args)
 
     if failures:
         sys.exit(failurs)
