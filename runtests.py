@@ -69,6 +69,9 @@ if __name__ == '__main__':
 
     options, args = parser.parse_args()
 
+    if not args:
+        args = {pure_label,}
+
     failures = runtests(int(options.verbosity), options.interactive,
             options.failfast, args)
 

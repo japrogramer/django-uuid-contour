@@ -14,4 +14,5 @@ class UUIDContour(TestCase):
     def test_uuid4_returns_hex(self):
         relevant_model = UUID4Contour._default_manager.create(username='uuid4')
         print(relevant_model.uu4.hex)
+        print(str(relevant_model.uu4))
         self.assertTrue(relevant_model.uu4.hex)
