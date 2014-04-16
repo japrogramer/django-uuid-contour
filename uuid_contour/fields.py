@@ -17,16 +17,15 @@ class UUIDContour(models.Field, metaclass=models.SubfieldBase):
 
     def __init__(self, standard=4, immutable=False, name=None,
             namespace=None, node=None, clock_seq=None, *args, **kwargs):
+        assert standard in (1, 3, 4, 5), '%s  is not available' % standard
         self.standard = standard
         self.immutable = immutable
         if immutable:
             kwargs['unique'] = True
             kwargs['blank'] = True
             kwargs['editable'] = False
-        if standard == 1:
-            self.node, self.clock_seq = node, clock_seq
-        elif standard in (3, 5):
-            self.namespace, self.name = namespace, name
+        self.node, self.clock_seq = node, clock_seq
+        self.namespace, self.name = namespace, name
         kwargs['max_length'] = 32
         super(UUIDContour, self).__init__(*args, **kwargs)
 

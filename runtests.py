@@ -73,5 +73,5 @@ if __name__ == '__main__':
             options.failfast, args)
 
     if failures:
-        sys.exit(failurs)
+        sys.exit(failures)
 
