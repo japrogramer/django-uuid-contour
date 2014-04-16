@@ -7,3 +7,6 @@ from uuid_contour.fields import ph, pu
 import uuid
 
 class UUIDContour(TestCase):
+
+    def test_uuid1_returns_hex(self):
+        relevant_model = UUID1Contour._default_manager.create(username='uuid1')
