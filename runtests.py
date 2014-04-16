@@ -6,6 +6,7 @@ import django
 from optparse import OptionParser
 import sys
 
+# This is the package name
 pure_label = 'uuid_contour'
 
 if not settings.configured:
@@ -31,6 +32,12 @@ if not settings.configured:
     django.setup()
 
 def setup(test_labels):
+    """
+    For Django 1.7 apps are defined as having an apps.py and __init__.py.
+    This function finds the tests submodule in the package and adds it to
+    the INSTALLED_APPS setting but most importantly it loads the models for
+    the test app so that there tables exist for the test
+    """
     from django.apps import apps, AppConfig
     test_labels_set = set()
     for label in test_labels:
@@ -46,6 +53,7 @@ def setup(test_labels):
         apps.clear_cache()
 
 def runtests(verbosity, interactive, failfast, test_labels):
+    # setup is run to find the tests submodule
     setup({'tests',})
     test_runner = DiscoverRunner( verbosity=verbosity,
             interactive=interactive,
@@ -69,6 +77,8 @@ if __name__ == '__main__':
 
     options, args = parser.parse_args()
 
+    # If no args are received test for the package labeled as dictated by
+    # pure_label
     if not args:
         args = {pure_label,}
 
