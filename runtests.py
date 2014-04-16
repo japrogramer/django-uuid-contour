@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from django.test.runner import DiscoverRunner
 from django.conf import settings
+import django
 
 from optparse import OptionParser
 import sys
@@ -25,7 +26,7 @@ if not settings.configured:
         ROOT_URLCONF='',
         DEBUG=False,
     )
-
+    django.setup()
 
 def runtests(verbosity, interactive, failfast, test_labels):
     test_runner = DiscoverRunner( verbosity=verbosity,

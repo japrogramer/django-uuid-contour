@@ -1,6 +1,6 @@
 from django.db import models
 
-from uuid_contour import UUIDContour
+from uuid_contour.fields import UUIDContour
 import uuid
 
 class UUID1Contour(UUIDContour):

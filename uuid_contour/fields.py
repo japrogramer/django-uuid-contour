@@ -55,8 +55,8 @@ class UUIDContour(models.Field, metaclass=models.SubfieldBase):
         return getattr(uuid, 'uuid%s' % self.standard)(*uuid_kwargs)
 
     def db_type(self, connection):
-        if connection.settings_dict['ENGINE'] ==
-            'django.db.backends.postgresql_psycopg2':
+        if (connection.settings_dict['ENGINE'] ==
+                'django.db.backends.postgresql_psycopg2'):
             return 'uuid'
         return 'char(%s)' % self.max_length
 
