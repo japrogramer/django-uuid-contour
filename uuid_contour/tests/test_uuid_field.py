@@ -1,5 +1,5 @@
 from django.test import TestCase
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core import serializers
 
 from uuid_contour.tests.models import (UUID1Contour, UUID3Contour,
@@ -52,3 +52,10 @@ class UUIDContour(TestCase):
                 uu=tt)
         self.assertTrue(isinstance(germane.uu, uuid.UUID))
         self.assertEqual(germane.uu, tt)
+
+    def test_uuid4_set_to_invalid_data(self):
+        tt = 'invalid data'
+        with self.assertRaises(ValidationError):
+            germane = UUID4Contour._default_manager.create(username='uuid4',
+                    uu=tt
+                    )
