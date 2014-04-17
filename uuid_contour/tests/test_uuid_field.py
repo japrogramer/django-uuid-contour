@@ -1,5 +1,6 @@
 from django.test import TestCase
 from django.core.exceptions import ObjectDoesNotExist
+from django.core import serializers
 
 from uuid_contour.tests.models import (UUID1Contour, UUID3Contour,
         UUID4Contour, UUID5Contour, UUIDPKContour)
@@ -13,6 +14,16 @@ class UUIDContour(TestCase):
         pertinent = UUIDPKContour._default_manager.get(pk=germane.pk)
         self.assertTrue(isinstance(germane.pk, uuid.UUID))
         self.assertEqual(germane, pertinent)
+
+    def test_uuid_as_pk_serializes(self):
+        tt = uuid.uuid4()
+        o_uuid = tt.hex
+        germane = [UUIDPKContour(username='uuidpk', uu=tt)]
+        data = serializers.serialize('json', germane)
+        for deserialized_object in serializers.deserialize('json', data):
+            deserialized_object.save()
+        pertinent = UUIDPKContour._default_manager.get(uu__exact=o_uuid)
+        self.assertEqual(o_uuid, pertinent.uu.hex)
 
     def test_uuid1_returns_hex(self):
         germane = UUID1Contour._default_manager.create(username='uuid1')
