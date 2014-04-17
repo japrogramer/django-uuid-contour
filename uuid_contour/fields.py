@@ -80,10 +80,7 @@ class UUIDContour(models.Field, metaclass=models.SubfieldBase):
 
     def pre_save(self, model_instance, add):
         value = getattr(model_instance, self.attname, None)
-        if not value and \
-                (self.immutable and add
-                        or self.immutable
-                        or self.standard is 1):
+        if not value and add:
             value = self._generate_uuid()
             setattr(model_instance, self.attname, value)
             return value.hex
