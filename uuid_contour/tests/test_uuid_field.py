@@ -54,7 +54,7 @@ class UUIDContour(TestCase):
         self.assertEqual(germane.uu, tt)
 
     def test_uuid4_set_to_invalid_data(self):
-        tt = 'invalid data'
+        tt = '19d0b3ca-0c89-4l8c-b2be-41265ebddfa2'
         with self.assertRaises(ValidationError):
             germane = UUID4Contour._default_manager.create(username='uuid4',
                     uu=tt
