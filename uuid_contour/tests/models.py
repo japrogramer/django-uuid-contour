@@ -24,6 +24,13 @@ class UUID3Contour(models.Model):
     def __str__(self):
         return self.uu3.hex
 
+class UUID3ContourPlain(models.Model):
+    username = models.CharField(max_length=40)
+    uu = UUIDContour(standard=3)
+
+    def __str__(self):
+        return self.uu3.hex
+
 class UUID4Contour(models.Model):
     username = models.CharField(max_length=40)
     uu = UUIDContour(immutable=True)
