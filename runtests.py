@@ -6,7 +6,8 @@ import django
 from optparse import OptionParser
 import sys
 
-# This is the package name
+# This is the package name, it is used in several places. If there are no args
+# provided it sets the args to a set with pure_label in it
 pure_label = 'uuid_contour'
 
 if not settings.configured:
@@ -28,7 +29,8 @@ if not settings.configured:
         ROOT_URLCONF='',
         DEBUG=False,
     )
-    # settings are complete
+    # settings are complete, this is run to ensure that the apps have been
+    # setup
     django.setup()
 
 def setup(test_labels):
@@ -53,16 +55,19 @@ def setup(test_labels):
         apps.clear_cache()
 
 def runtests(verbosity, interactive, failfast, test_labels):
-    # setup is run to find the tests submodule
+    # setup is run to find the tests submodule, this is joined with the
+    # pure_label variable
     setup({'tests',})
     test_runner = DiscoverRunner( verbosity=verbosity,
             interactive=interactive,
             failfast=failfast,
             )
+    # Finally run the tests and return the failures
     failures = test_runner.run_tests(test_labels)
     return failures
 
 if __name__ == '__main__':
+    # We add the acceptable options to the parser and sensible defaults
     parser = OptionParser()
     parser.add_option('-v', '--verbosity', action='store', dest='verbosity',
             default='1', type='choice', choices=['0', '1', '2', '3'],

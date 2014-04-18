@@ -59,3 +59,12 @@ class UUIDContour(TestCase):
             germane = UUID4Contour._default_manager.create(username='uuid4',
                     uu=tt
                     )
+
+    def test_uuid4_set_to_bytes_data(self):
+        tt = b'\x81[\xb5~\xbc\xa9G6\x80WvIU\x92\xbc\x1e'
+        yy = uuid.UUID(bytes=tt)
+        germane = UUID4Contour._default_manager.create(username='uuid4',
+                    uu=tt
+                    )
+        self.assertEqual(yy.hex, germane.uu.hex)
+        self.assertEqual(yy.bytes, germane.uu.bytes)

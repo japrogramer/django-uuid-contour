@@ -92,6 +92,8 @@ class UUIDContour(models.Field, metaclass=models.SubfieldBase):
             return None
         if isinstance(value, uuid.UUID):
             return value
+        elif isinstance(value, type(b'')):
+            return uuid.UUID(bytes=value)
         try:
             value = uuid.UUID(value)
         except ValueError as e:
