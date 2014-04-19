@@ -56,3 +56,7 @@ And to query by a uuid
     tt = uuid.uuid4()
     o_uuid = tt.hex
     pertinent = UUID4Contour._default_manager.get(uu__exact=o_uuid)
+
+Verifying uuids: if you are allowing a user to set a uuid field, uuid contour
+    provides to regex to match hypenated and unhyohenated uuid str they are ph
+    and pu respectively, they can be crafted into your forms validation
