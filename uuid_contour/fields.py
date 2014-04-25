@@ -17,7 +17,8 @@ class UUIDContour(models.Field, metaclass=models.SubfieldBase):
 
     def __init__(self, standard=4, immutable=False, name=None,
             namespace=None, node=None, clock_seq=None, *args, **kwargs):
-        assert standard in (1, 3, 4, 5), '%s  is not available' % standard
+        if standard not in (1, 3, 4, 5):
+            raise ValueError('%s  is not available' % standard)
         self.standard = standard
         self.immutable = immutable
         if immutable:

@@ -68,3 +68,8 @@ class UUIDContour(TestCase):
                     )
         self.assertEqual(yy.hex, germane.uu.hex)
         self.assertEqual(yy.bytes, germane.uu.bytes)
+
+    def test_uuid_invalid_standard(self):
+        from uuid_contour.fields import UUIDContour
+        with self.assertRaises(ValueError):
+            field = UUIDContour(standard=7)
