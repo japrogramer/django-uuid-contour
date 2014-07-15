@@ -28,6 +28,14 @@ if not settings.configured:
         ],
         ROOT_URLCONF='',
         DEBUG=False,
+        MIDDLEWARE_CLASSES = (
+            'django.contrib.sessions.middleware.SessionMiddleware',
+            'django.middleware.common.CommonMiddleware',
+            'django.middleware.csrf.CsrfViewMiddleware',
+            'django.contrib.auth.middleware.AuthenticationMiddleware',
+            'django.contrib.messages.middleware.MessageMiddleware',
+            'django.middleware.clickjacking.XFrameOptionsMiddleware',
+        )
     )
     # settings are complete, this is run to ensure that the apps have been
     # setup
