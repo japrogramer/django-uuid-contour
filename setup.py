@@ -17,7 +17,6 @@ VERSION = __import__(PACKAGE).__version__
 # setup call
 setup(
     name=NAME,
-    packages = [PACKAGE, ],
     version=VERSION,
     description=DESCRIPTION,
     long_description=read('README.md'),
